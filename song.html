@@ -98,59 +98,64 @@ h1{
 <audio id="song" src="assets/song.mp3"></audio>
 
 <script>
-
 const song = document.getElementById("song");
 const lyricsBox = document.getElementById("lyrics");
 
-/* Updated Synced Lyrics */
 const timedLyrics = [
-
   { text:"Kya khub lagti ho 💖", time:0 },
-
   { text:"Badi sundar dikhti ho 😍", time:3.6 },
-
   { text:"Kya khub lagti ho 💕", time:6.4 },
-
   { text:"Badi sundar dikhti ho 💗", time:10 },
-
 ];
 
 let index = 0;
+let started = false;
 
-/* Auto Play After Page Load */
+/* Show start button if autoplay fails */
+function showStart(){
+  lyricsBox.innerHTML = `
+    <button style="
+      background:#ff4f8b;
+      border:none;
+      padding:14px 30px;
+      border-radius:30px;
+      font-size:18px;
+      color:white;
+      cursor:pointer;
+      box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    ">💖 Start 💖</button>
+  `;
+}
+
+/* Start song manually */
+document.body.addEventListener("click",()=>{
+  if(!started){
+    song.play();
+    started = true;
+  }
+});
+
+/* Try autoplay */
 window.onload = () => {
-
-  song.play().catch(()=>{
-    lyricsBox.innerText="▶️ Tap anywhere to start...";
-  });
-
+  song.play().then(()=>{
+    started = true;
+  }).catch(showStart);
 };
 
-/* If autoplay blocked */
-document.body.addEventListener("click",()=>{
-  song.play();
-});
-
-
+/* Sync lyrics */
 song.addEventListener("timeupdate",()=>{
+  if(index < timedLyrics.length &&
+     song.currentTime >= timedLyrics[index].time){
 
-  if(index < timedLyrics.length){
+    lyricsBox.innerText = timedLyrics[index].text;
 
-    if(song.currentTime >= timedLyrics[index].time){
+    lyricsBox.classList.remove("fade");
+    void lyricsBox.offsetWidth;
+    lyricsBox.classList.add("fade");
 
-      lyricsBox.innerText = timedLyrics[index].text;
-
-      lyricsBox.style.animation="none";
-      lyricsBox.offsetHeight;
-      lyricsBox.style.animation="fade 0.6s ease";
-
-      index++;
-
-    }
+    index++;
   }
-
 });
-
 </script>
 
 </body>
