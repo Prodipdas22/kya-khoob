@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <title>Only For You 💖</title>
 
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ff5f9e">
 
+<style>
 *{
   margin:0;
   padding:0;
@@ -22,16 +24,16 @@ body{
   overflow:hidden;
 }
 
-/* Floating Hearts */
+/* Floating hearts */
 .heart{
   position:absolute;
-  font-size:24px;
+  font-size:22px;
   animation:float 6s linear infinite;
   opacity:0.7;
 }
 
 @keyframes float{
-  from{transform:translateY(100vh);}
+  from{transform:translateY(110vh);}
   to{transform:translateY(-10vh);}
 }
 
@@ -40,29 +42,29 @@ body{
 .h3{left:60%;animation-delay:4s;}
 .h4{left:80%;animation-delay:1s;}
 
-/* Main Box */
+/* Main box */
 .container{
   background:rgba(255,255,255,0.25);
   backdrop-filter:blur(12px);
-  padding:50px 35px;
-  border-radius:25px;
+  padding:35px 22px;
+  border-radius:22px;
   text-align:center;
   width:90%;
-  max-width:450px;
+  max-width:420px;
   box-shadow:0 10px 35px rgba(0,0,0,0.25);
   color:white;
   z-index:2;
 }
 
 h1{
-  font-size:30px;
-  margin-bottom:25px;
+  font-size:24px;
+  margin-bottom:20px;
 }
 
 .lyrics{
-  font-size:24px;
+  font-size:20px;
   line-height:1.8;
-  min-height:120px;
+  min-height:100px;
   font-weight:600;
   animation:fade 0.6s ease;
 }
@@ -72,86 +74,88 @@ h1{
   to{opacity:1;transform:translateY(0);}
 }
 
+/* Start overlay */
+.start-screen{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(135deg,#ff5f9e,#ff9acb);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:10;
+}
+
+.start-btn{
+  background:#ff4f8b;
+  border:none;
+  padding:16px 36px;
+  border-radius:30px;
+  font-size:20px;
+  color:white;
+  cursor:pointer;
+  box-shadow:0 8px 25px rgba(0,0,0,0.35);
+}
+
+.start-btn:active{
+  transform:scale(0.95);
+}
 </style>
 </head>
 
 <body>
 
-<!-- Hearts -->
+<!-- Floating hearts -->
 <div class="heart h1">💖</div>
 <div class="heart h2">💕</div>
 <div class="heart h3">💗</div>
 <div class="heart h4">💘</div>
 
-<!-- Main -->
-<div class="container">
-
-  <h1>Only For You 💝</h1>
-
-  <div class="lyrics" id="lyrics">
-    💗 Wait for magic...
-  </div>
-
+<!-- Start Screen -->
+<div class="start-screen" id="startScreen">
+  <button class="start-btn">💖 Tap to Start 💖</button>
 </div>
 
-<!-- Hidden Audio -->
-<audio id="song" src="assets/song.mp3"></audio>
+<!-- Main content -->
+<div class="container">
+  <h1>Only For You 💝</h1>
+  <div class="lyrics" id="lyrics">💗 Just for you...</div>
+</div>
+
+<!-- Audio -->
+<audio id="song" preload="auto">
+  <source src="assets/song.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 const song = document.getElementById("song");
 const lyricsBox = document.getElementById("lyrics");
+const startScreen = document.getElementById("startScreen");
 
 const timedLyrics = [
   { text:"Kya khub lagti ho 💖", time:0 },
   { text:"Badi sundar dikhti ho 😍", time:3.6 },
   { text:"Kya khub lagti ho 💕", time:6.4 },
-  { text:"Badi sundar dikhti ho 💗", time:10 },
+  { text:"Badi sundar dikhti ho 💗", time:10 }
 ];
 
 let index = 0;
-let started = false;
 
-/* Show start button if autoplay fails */
-function showStart(){
-  lyricsBox.innerHTML = `
-    <button style="
-      background:#ff4f8b;
-      border:none;
-      padding:14px 30px;
-      border-radius:30px;
-      font-size:18px;
-      color:white;
-      cursor:pointer;
-      box-shadow:0 8px 20px rgba(0,0,0,0.3);
-    ">💖 Start 💖</button>
-  `;
-}
-
-/* Start song manually */
-document.body.addEventListener("click",()=>{
-  if(!started){
-    song.play();
-    started = true;
-  }
+/* Start on user interaction (mobile-safe) */
+startScreen.addEventListener("click", () => {
+  song.play();
+  startScreen.style.display = "none";
 });
 
-/* Try autoplay */
-window.onload = () => {
-  song.play().then(()=>{
-    started = true;
-  }).catch(showStart);
-};
-
 /* Sync lyrics */
-song.addEventListener("timeupdate",()=>{
-  if(index < timedLyrics.length &&
-     song.currentTime >= timedLyrics[index].time){
+song.addEventListener("timeupdate", () => {
+  if (index < timedLyrics.length &&
+      song.currentTime >= timedLyrics[index].time) {
 
     lyricsBox.innerText = timedLyrics[index].text;
 
-    lyricsBox.classList.remove("fade");
-    void lyricsBox.offsetWidth;
-    lyricsBox.classList.add("fade");
+    lyricsBox.style.animation = "none";
+    lyricsBox.offsetHeight;
+    lyricsBox.style.animation = "fade 0.6s ease";
 
     index++;
   }
